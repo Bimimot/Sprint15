@@ -9,12 +9,17 @@ const fsPromises = require('fs').promises;                //модуль нод�
 
 
 
+const rootPath =
 
 app.use(express.static(path.join(__dirname, 'public'))); // доступ только к публичным файлам
 app.listen(PORT);                                        //начинаем слушать заданный порт
 
+
+const usersPath = path.join(__dirname, 'data', 'users.json');
+
+
 app.get('/users', (req, res) => {
-  fsPromises.readFile('./data/users.json', { encoding: 'utf8' })      //смотрим промис чтения файла
+  fsPromises.readFile(usersPath, { encoding: 'utf8' })      //смотрим промис чтения файла
       .then((data) => {                                               //если успешно - возвращаем данные
           res.send(JSON.parse(data));
       })
