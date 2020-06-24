@@ -47,26 +47,18 @@ app.get('/users/:id', (req, res) => {
           return
         }
       };
+      res.send({"message": "Нет пользователя с таким id"});
   })
   .catch(err => {                                                 //при ошибке - возвращаем ошибку
       res.send(err);
   });
 });
 
-// function findUser(userId) {
-//   fsPromises.readFile(usersPath, { encoding: 'utf8' })                //смотрим промис чтения файла
-//   .then((data) => {                                               //если успешно - возвращаем данные
-//       const usersArr = JSON.parse(data);                          //собираем массив с данными пользователей
-//       for (i =0; i < usersArr.length; i++){                                // проходим по всему массиву
-//         if (usersArr[i]._id === userId) {                          //если находим юзера с нужным id - выводим его данным
-//           console.log(usersArr[i]);
-//           return
-//         }
-//       };
-//   })
-//   .catch(err => {                                                 //при ошибке - возвращаем ошибку
-//       console.log(err);
-//   });
-// };
+app.get('/:link', (req, res) => {
+  const{link} = req.params;                                         //запоминаем запрошенный id
+  link.match(/^(cards)|(users(\/[a-z0-9]+)?)/i);
+  if (link.match(/^(cards)|(users(\/[a-z0-9]+)?)/i) === null){
+    res.send({ "message": "Запрашиваемый ресурс не найден" });
+  }
+});
 
-// findUser('dbfe53c3c4d568240378b0c6');
