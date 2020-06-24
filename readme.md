@@ -1,8 +1,8 @@
-# Mesto Project
+# Sprint Project
 
 ## Version 1.0
 
-# https://bimimot.github.io/mesto
+# https://bimimot.github.io/Sprint12
 
 
 ## It's training project
@@ -11,7 +11,5 @@ The maint theme is NODE and express
 	
 ## Author - Stepan Popov
 
-### How to start
-Folder 'dist' in develop branch includes productive bundle which was made by webpack.
-Start index.html from this folder.
+
 	
