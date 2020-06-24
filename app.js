@@ -8,7 +8,6 @@ app.use(express.static(path.join(__dirname, 'public'))); // доступ тол�
 
 app.listen(PORT);
 
-// app.listen(PORT, () => {
-//     // Если всё работает, консоль покажет, какой порт приложение слушает
-//     console.log(`App listening on port ${PORT}`)
-// })
+app.get('/users', (req, res) => {
+    res.send(animals[req.query.animal][req.query.type]);
+});
