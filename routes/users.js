@@ -20,7 +20,7 @@ router.get('/users/:id', (req, res) => {
   fsPromises.readFile(usersPath, { encoding: 'utf8' }) // смотрим промис чтения файла
     .then((data) => { // если успешно - возвращаем данные
       const usersArr = JSON.parse(data); // собираем массив с данными пользователей
-      for (i = 0; i < usersArr.length; i++) { // проходим по всему массиву
+      for (let i = 0; i < usersArr.length; i += 1) { // проходим по всему массиву
         if (usersArr[i]._id === id) { // если находим юзера с нужным id - выводим его данным
           res.send(usersArr[i]);
           return;
