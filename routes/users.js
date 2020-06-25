@@ -27,7 +27,7 @@ router.get('/users/:id', (req, res) => {
           return
         }
       };
-      res.send({ "message": "Нет пользователя с таким id" });
+      res.status(404).send({ "message": "Нет пользователя с таким id" });
     })
     .catch(err => {                                                 //при ошибке - возвращаем ошибку
       res.send(err);
