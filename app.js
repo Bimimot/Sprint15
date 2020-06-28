@@ -1,4 +1,3 @@
-const path = require('path'); // модуль ноды для работы с путями файлов
 const express = require('express'); // модуль ноды для http сервера
 const mongoose = require('mongoose'); // модуль ноды для подключения сервера с базой данных
 const bodyParser = require('body-parser'); // модуль ноды для парсинга пост-запросов в нужный (json) формат

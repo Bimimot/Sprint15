@@ -3,7 +3,7 @@ const Card = require('../models/card');
 // поиск всех карточек
 module.exports.getCards = (req, res) => {
   Card.find({})
-    .then((users) => res.send({ data: users }))
+    .then((cards) => res.send({ data: cards }))
     .catch((err) => res.status(500).send({ message: err.message }));
 };
 
@@ -12,13 +12,35 @@ module.exports.postCard = (req, res) => {
   const { name, link } = req.body;
   const owner = req.user._id; // берем id, который жетско добавили в запрос
   Card.create({ name, link, owner })
-    .then((user) => res.send({ data: user }))
+    .then((card) => res.send({ data: card }))
     .catch((err) => res.status(500).send({ message: err.message }));
 };
 
 // удаление карточки по id
 module.exports.delCard = (req, res) => {
-  Card.findByIdAndRemove(req.params.id)
-    .then((user) => res.send({ data: user }))
+  Card.findByIdAndRemove(req.params.cardId)
+    .then((card) => res.send({ data: card }))
+    .catch((err) => res.status(500).send({ message: err.message }));
+};
+
+// поставить лайк карточки, сохранить id пользователя в массив лайков
+module.exports.likeCard = (req, res) => {
+  Card.findByIdAndUpdate(
+    req.params.cardId,
+    { $addToSet: { likes: req.user._id } }, // добавить _id в массив, если его там нет
+    { new: true },
+  )
+    .then((card) => res.send({ data: card }))
+    .catch((err) => res.status(500).send({ message: err.message }));
+};
+
+// убрать лайк с карточки, убрать id пользователя из массива лайков
+module.exports.dislikeCard = (req, res) => {
+  Card.findByIdAndUpdate(
+    req.params.cardId,
+    { $pull: { likes: req.user._id } }, // убрать _id из массива
+    { new: true },
+  )
+    .then((card) => res.send({ data: card }))
     .catch((err) => res.status(500).send({ message: err.message }));
 };
