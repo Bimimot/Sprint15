@@ -1,5 +1,7 @@
 const router = require('express').Router();
-const { getCards, postCard, delCard, likeCard, dislikeCard } = require('../controllers/cards'); // импорт методов из контроллера
+const {
+  getCards, postCard, delCard, likeCard, dislikeCard,
+} = require('../controllers/cards'); // импорт методов из контроллера
 
 router.get('/', getCards); // вызываем метод получения всех карточек
 router.post('/', postCard); // вызываем метод добавлени карточки
