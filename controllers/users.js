@@ -28,3 +28,10 @@ module.exports.patchUser = (req, res) => {
     .then((user) => res.send({ data: user }))
     .catch((err) => res.status(500).send({ message: err.message }));
 };
+
+// обновление аватара пользователя
+module.exports.patchUserAvatar = (req, res) => {
+  User.findByIdAndUpdate(req.user._id, { avatar: req.body.avatar })
+    .then((user) => res.send({ data: user }))
+    .catch((err) => res.status(500).send({ message: err.message }));
+};
