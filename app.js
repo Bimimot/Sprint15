@@ -21,7 +21,7 @@ app.use(bodyParser.json()); // для собирания JSON-формата
 
 app.use((req, res, next) => { // хардкод для добавления id пользователя
   req.user = {
-    _id: '5ef84bb4f4471d05c8f81aa2',
+    _id: '5ef874ea83381c263860784e',
   };
 
   next();
