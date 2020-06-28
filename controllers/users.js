@@ -24,14 +24,22 @@ module.exports.postUser = (req, res) => {
 
 // обновление данных пользователя
 module.exports.patchUser = (req, res) => {
-  User.findByIdAndUpdate(req.user._id, { name: req.body.name, about: req.body.about })
+  User.findByIdAndUpdate(req.user._id, { name: req.body.name, about: req.body.about },
+    {
+      new: true, // обработчик then получит на вход обновлённую запись
+      runValidators: true, // данные будут валидированы перед изменением
+    })
     .then((user) => res.send({ data: user }))
     .catch((err) => res.status(500).send({ message: err.message }));
 };
 
 // обновление аватара пользователя
 module.exports.patchUserAvatar = (req, res) => {
-  User.findByIdAndUpdate(req.user._id, { avatar: req.body.avatar })
+  User.findByIdAndUpdate(req.user._id, { avatar: req.body.avatar },
+    {
+      new: true, // обработчик then получит на вход обновлённую запись
+      runValidators: true, // данные будут валидированы перед изменением
+    })
     .then((user) => res.send({ data: user }))
     .catch((err) => res.status(500).send({ message: err.message }));
 };
