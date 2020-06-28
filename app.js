@@ -17,9 +17,6 @@ const cardsRouter = require('./routes/cards.js'); // импортируем ро
 const usersRouter = require('./routes/users.js'); // импортируем роутер для данных о пользователях
 const nolinkRouter = require('./routes/nolink.js'); // импортируем роутер для неверных запросов
 
-const publicPath = path.join(__dirname, 'public'); // собрали абсолютный путь к папке public
-
-app.use(express.static(publicPath)); // доступ только к публичным файлам
 app.use(bodyParser.json()); // для собирания JSON-формата
 
 app.use((req, res, next) => { // хардкод для добавления id пользователя
