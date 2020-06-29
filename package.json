@@ -1,8 +1,8 @@
 {
-  "name": "sprint_12",
+  "name": "sprint_13",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Training project about REST API",
+  "main": "app.js",
   "scripts": {
     "start": "node app.js",
     "dev": "nodemon app.js"
