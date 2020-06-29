@@ -12,6 +12,9 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
   useFindAndModify: false,
 });
 
+console.log('Mongodb server started on port 27017'); // eslint-disable-line no-console
+console.log('Express server started on port 3000'); // eslint-disable-line no-console
+
 const cardsRouter = require('./routes/cards.js'); // импортируем роутер для карточек
 const usersRouter = require('./routes/users.js'); // импортируем роутер для данных о пользователях
 const nolinkRouter = require('./routes/nolink.js'); // импортируем роутер для неверных запросов
