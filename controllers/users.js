@@ -24,7 +24,8 @@ module.exports.postUser = (req, res) => {
 
 // обновление данных пользователя
 module.exports.patchUser = (req, res) => {
-  User.findByIdAndUpdate(req.user._id, { name: req.body.name, about: req.body.about },
+  const { name, about } = req.body;
+  User.findByIdAndUpdate(req.user._id, { name, about },
     {
       new: true, // обработчик then получит на вход обновлённую запись
       runValidators: true, // данные будут валидированы перед изменением
