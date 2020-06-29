@@ -17,7 +17,6 @@ console.log('Express server started on port 3000'); // eslint-disable-line no-co
 
 const cardsRouter = require('./routes/cards.js'); // импортируем роутер для карточек
 const usersRouter = require('./routes/users.js'); // импортируем роутер для данных о пользователях
-const nolinkRouter = require('./routes/nolink.js'); // импортируем роутер для неверных запросов
 
 app.use(bodyParser.json()); // для собирания JSON-формата
 
@@ -25,12 +24,14 @@ app.use((req, res, next) => { // хардкод для добавления id �
   req.user = {
     _id: '5ef874ea83381c263860784e',
   };
-
   next();
 });
 
 app.use('/users', usersRouter); // подключаем usersRouter
 app.use('/cards', cardsRouter); // подключаем cardsRouter
-app.use('/', nolinkRouter); // подключаем nolinkRouter
+
+app.use((req, res) => { // если запрос на несуществующую страницу
+  res.status(404).send({ message: 'Запрашиваемый ресурс не найден' });
+});
 
 app.listen(PORT); // начинаем слушать заданный порт
