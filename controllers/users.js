@@ -17,7 +17,13 @@ module.exports.getUserById = (req, res) => {
         res.send({ data: user });
       }
     })
-    .catch((err) => res.status(500).send({ message: err.message }));
+    .catch((err) => {
+      if (err.name === 'CastError' || err.name === 'ValidationError') {
+        res.status(400).send({ message: 'id пользователя передан в неверном формате'});
+      } else {
+        res.status(500).send({ message: err.name });
+      }
+    });
 };
 
 // создание пользователя
@@ -43,7 +49,13 @@ module.exports.patchUser = (req, res) => {
         res.send({ data: user });
       }
     })
-    .catch((err) => res.status(500).send({ message: err.message }));
+    .catch((err) => {
+      if (err.name === 'CastError' || err.name === 'ValidationError') {
+        res.status(400).send({ message: 'Данные пользователя переданы в неверном формате'});
+      } else {
+        res.status(500).send({ message: err.name });
+      }
+    });
 };
 
 // обновление аватара пользователя
@@ -60,5 +72,11 @@ module.exports.patchUserAvatar = (req, res) => {
         res.send({ data: user });
       }
     })
-    .catch((err) => res.status(500).send({ message: err.message }));
+    .catch((err) => {
+      if (err.name === 'CastError' || err.name === 'ValidationError') {
+        res.status(400).send({ message: 'Ссылка на аватар пользователя передана в неверном формате'});
+      } else {
+        res.status(500).send({ message: err.name });
+      }
+    });
 };

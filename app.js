@@ -28,7 +28,7 @@ app.use((req, res, next) => { // хардкод для добавления id �
 });
 
 app.use('/users', usersRouter); // подключаем usersRouter
-app.use('/cards', cardsRouter); // подключаем cardsRouter
+app.use('/cards', cardsRouter); // подключаем cardsRoute
 
 app.use((req, res) => { // если запрос на несуществующую страницу
   res.status(404).send({ message: 'Запрашиваемый ресурс не найден' });
