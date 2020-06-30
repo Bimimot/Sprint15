@@ -10,7 +10,13 @@ module.exports.getUsers = (req, res) => {
 // поиск пользователя по id
 module.exports.getUserById = (req, res) => {
   User.findById(req.params.id)
-    .then((user) => res.send({ data: user }))
+    .then((user) => {
+      if (user == null) {
+        res.status(404).send({ message: 'Нет такого пользователя' });
+      } else {
+        res.send({ data: user });
+      }
+    })
     .catch((err) => res.status(500).send({ message: err.message }));
 };
 
@@ -30,7 +36,13 @@ module.exports.patchUser = (req, res) => {
       new: true, // обработчик then получит на вход обновлённую запись
       runValidators: true, // данные будут валидированы перед изменением
     })
-    .then((user) => res.send({ data: user }))
+    .then((user) => {
+      if (user == null) {
+        res.status(404).send({ message: 'Нет такого пользователя' });
+      } else {
+        res.send({ data: user });
+      }
+    })
     .catch((err) => res.status(500).send({ message: err.message }));
 };
 
@@ -41,6 +53,12 @@ module.exports.patchUserAvatar = (req, res) => {
       new: true, // обработчик then получит на вход обновлённую запись
       runValidators: true, // данные будут валидированы перед изменением
     })
-    .then((user) => res.send({ data: user }))
+    .then((user) => {
+      if (user == null) {
+        res.status(404).send({ message: 'Нет такого пользователя' });
+      } else {
+        res.send({ data: user });
+      }
+    })
     .catch((err) => res.status(500).send({ message: err.message }));
 };
