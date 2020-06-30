@@ -19,7 +19,13 @@ module.exports.postCard = (req, res) => {
 // удаление карточки по id
 module.exports.delCard = (req, res) => {
   Card.findByIdAndRemove(req.params.id)
-    .then((card) => res.send({ data: card }))
+    .then((card) => {
+      if (card == null) {
+        res.status(404).send({ message: 'Карточка с таким id не найдена' });
+      } else {
+        res.send({ data: card });
+      }
+    })
     .catch((err) => res.status(500).send({ message: err.message }));
 };
 
@@ -30,7 +36,13 @@ module.exports.likeCard = (req, res) => {
     { $addToSet: { likes: req.user._id } }, // добавить _id в массив, если его там нет
     { new: true },
   )
-    .then((card) => res.send({ data: card }))
+    .then((card) => {
+      if (card == null) {
+        res.status(404).send({ message: 'Карточка с таким id не найдена' });
+      } else {
+        res.send({ data: card });
+      }
+    })
     .catch((err) => res.status(500).send({ message: err.message }));
 };
 
@@ -41,6 +53,12 @@ module.exports.dislikeCard = (req, res) => {
     { $pull: { likes: req.user._id } }, // убрать _id из массива
     { new: true },
   )
-    .then((card) => res.send({ data: card }))
+    .then((card) => {
+      if (card == null) {
+        res.status(404).send({ message: 'Карточка с таким id не найдена' });
+      } else {
+        res.send({ data: card });
+      }
+    })
     .catch((err) => res.status(500).send({ message: err.message }));
 };

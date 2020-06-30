@@ -38,7 +38,7 @@ module.exports.patchUser = (req, res) => {
     })
     .then((user) => {
       if (user == null) {
-        res.status(404).send({ message: 'Нет такого пользователя' });
+        res.status(404).send({ message: 'Пользователь с таким id не найден' });
       } else {
         res.send({ data: user });
       }
