@@ -12,9 +12,6 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
   useFindAndModify: false,
 });
 
-console.log('Mongodb server started on port 27017'); // eslint-disable-line no-console
-console.log('Express server started on port 3000'); // eslint-disable-line no-console
-
 const cardsRouter = require('./routes/cards.js'); // импортируем роутер для карточек
 const usersRouter = require('./routes/users.js'); // импортируем роутер для данных о пользователях
 
@@ -34,4 +31,6 @@ app.use((req, res) => { // если запрос на несуществующу
   res.status(404).send({ message: 'Запрашиваемый ресурс не найден' });
 });
 
-app.listen(PORT); // начинаем слушать заданный порт
+app.listen(PORT, () => {
+  console.log('Express server started on port', PORT); // eslint-disable-line no-console
+}); // начинаем слушать заданный порт
