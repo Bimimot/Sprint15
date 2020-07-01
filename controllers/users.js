@@ -19,7 +19,7 @@ module.exports.getUserById = (req, res) => {
     })
     .catch((err) => {
       if (err.name === 'CastError' || err.name === 'ValidationError') {
-        res.status(400).send({ message: 'id пользователя передан в неверном формате'});
+        res.status(400).send({ message: 'id пользователя передан в неверном формате' });
       } else {
         res.status(500).send({ message: err.name });
       }
@@ -51,7 +51,7 @@ module.exports.patchUser = (req, res) => {
     })
     .catch((err) => {
       if (err.name === 'CastError' || err.name === 'ValidationError') {
-        res.status(400).send({ message: 'Данные пользователя переданы в неверном формате'});
+        res.status(400).send({ message: 'Данные пользователя переданы в неверном формате' });
       } else {
         res.status(500).send({ message: err.name });
       }
@@ -74,7 +74,7 @@ module.exports.patchUserAvatar = (req, res) => {
     })
     .catch((err) => {
       if (err.name === 'CastError' || err.name === 'ValidationError') {
-        res.status(400).send({ message: 'Ссылка на аватар пользователя передана в неверном формате'});
+        res.status(400).send({ message: 'Ссылка на аватар пользователя передана в неверном формате' });
       } else {
         res.status(500).send({ message: err.name });
       }
