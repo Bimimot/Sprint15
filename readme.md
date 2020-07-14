@@ -1,11 +1,9 @@
-# Sprint 13 Project
+# Sprint 14 Project
 
 ## Version 1.0
 
-
 ## It's training project
-This project includes themes: regular expression, API, css, html, js, 
-The main theme is REST API with mongo
+This project includes themes: API, autorization and frontend-security
 	
 
 ## Author - Stepan Popov
