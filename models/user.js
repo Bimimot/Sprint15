@@ -24,6 +24,18 @@ const userSchema = new mongoose.Schema({
     },
     required: true,
   },
+  email: {
+    type: String,
+    required: true,
+    validator(text) {
+      return (validatorNpm.isEmail(text));
+    },
+    message: (props) => `${props.value} Неверно указана электронная почта`,
+  },
+  password: {
+    type: String,
+    required: true,
+  },
 });
 
 module.exports = mongoose.model('user', userSchema);
