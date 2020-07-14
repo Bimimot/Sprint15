@@ -1,5 +1,5 @@
+const bcrypt = require('bcryptjs');
 const User = require('../models/user');
-
 
 // поиск всех пользователей
 module.exports.getUsers = (req, res) => {
@@ -29,8 +29,13 @@ module.exports.getUserById = (req, res) => {
 
 // создание пользователя
 module.exports.createUser = (req, res) => {
-  const { name, about, avatar, email, password } = req.body;
-  User.create({ name, about, avatar, email, password })
+  const {
+    name, about, avatar, email, password,
+  } = req.body;
+  bcrypt.hash(password, 5)
+    .then((hash) => User.create({
+      name, about, avatar, email, hash,
+    }))
     .then((user) => res.send({ data: user }))
     .catch((err) => res.status(400).send({ message: err.message }));
 };
