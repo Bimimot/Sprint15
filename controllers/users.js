@@ -1,5 +1,6 @@
 const User = require('../models/user');
 
+
 // поиск всех пользователей
 module.exports.getUsers = (req, res) => {
   User.find({})
@@ -27,11 +28,11 @@ module.exports.getUserById = (req, res) => {
 };
 
 // создание пользователя
-module.exports.postUser = (req, res) => {
-  const { name, about, avatar } = req.body;
-  User.create({ name, about, avatar })
+module.exports.createUser = (req, res) => {
+  const { name, about, avatar, email, password } = req.body;
+  User.create({ name, about, avatar, email, password })
     .then((user) => res.send({ data: user }))
-    .catch((err) => res.status(500).send({ message: err.message }));
+    .catch((err) => res.status(400).send({ message: err.message }));
 };
 
 // обновление данных пользователя
