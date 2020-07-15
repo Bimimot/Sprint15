@@ -89,24 +89,13 @@ module.exports.patchUserAvatar = (req, res) => {
 };
 
 // авторизация пользователя
-
 module.exports.login = (req, res) => {
   const { email, password } = req.body;
 
-  User.findOne({ email })
+  return User.findUserByCredentials(email, password)
     .then((user) => {
-      if (!user) {
-        return Promise.reject(new Error('Неправильные почта или пароль'));
-      }
-
-      return bcrypt.compare(password, user.password);
-    })
-    .then((matched) => {
-      if (!matched) {
-        return Promise.reject(new Error('Неправильные почта или пароль')); // хеши не совпали — отклоняем промис
-      }
-      res.send({ message: 'Всё верно!' });
-      return (true); // return добавлен для соблюдения стандарта eslint
+      const token = jwt.sign({ _id: user._id }, 'secret-key'); // создали токен
+      res.send({ token });
     })
     .catch((err) => {
       res

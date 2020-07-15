@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const validatorNpm = require('validator');
+const bcrypt = require('bcryptjs'); // импорт модуля для создания хешей
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -37,5 +38,23 @@ const userSchema = new mongoose.Schema({
     required: true,
   },
 });
+
+userSchema.statics.findUserByCredentials = function checkUser(email, password) {
+  return this.findOne({ email })
+    .then((user) => {
+      if (!user) {
+        return Promise.reject(new Error('Неправильные почта или пароль'));
+      }
+
+      return bcrypt.compare(password, user.password) // сравнение хэшей
+        .then((matched) => {
+          if (!matched) {
+            return Promise.reject(new Error('Неправильные почта или пароль'));
+          }
+
+          return user; // теперь user доступен
+        });
+    });
+};
 
 module.exports = mongoose.model('user', userSchema);
