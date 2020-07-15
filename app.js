@@ -17,13 +17,6 @@ const usersRouter = require('./routes/users.js'); // импортируем ро
 
 app.use(bodyParser.json()); // для собирания JSON-формата
 
-app.use((req, res, next) => { // хардкод для добавления id пользователя
-  req.user = {
-    _id: '5ef874ea83381c263860784e',
-  };
-  next();
-});
-
 app.use('/users', usersRouter); // подключаем usersRouter
 app.use('/cards', cardsRouter); // подключаем cardsRoute
 
