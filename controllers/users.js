@@ -1,4 +1,5 @@
-const bcrypt = require('bcryptjs');
+const bcrypt = require('bcryptjs'); // импорт модуля для создания хешей
+const jwt = require('jsonwebtoken'); // импорт модуля для создания токенов
 const User = require('../models/user');
 
 // поиск всех пользователей
