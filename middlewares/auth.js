@@ -1,4 +1,6 @@
-/* eslint-disable consistent-return */ // отключили запрет линтера на отсутствие return в стрелочной функции
+/* eslint-disable consistent-return */
+// отключен запрет линтера на отсутствие return в стрелочной функции
+
 // middlewares/auth.js
 
 const jwt = require('jsonwebtoken'); // подключаем модуль создания jwt токенов
