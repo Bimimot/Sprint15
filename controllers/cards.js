@@ -10,7 +10,7 @@ module.exports.getCards = (req, res) => {
 // создание карточки
 module.exports.postCard = (req, res) => {
   const { name, link } = req.body;
-  const owner = req.user._id; // берем id, который жетско добавили в запрос
+  const owner = req.user; // берем id, полученный из милдверы авторизации
   Card.create({ name, link, owner })
     .then((card) => res.send({ data: card }))
     .catch((err) => res.status(500).send({ message: err.message }));
@@ -18,12 +18,21 @@ module.exports.postCard = (req, res) => {
 
 // удаление карточки по id
 module.exports.delCard = (req, res) => {
-  Card.findByIdAndRemove(req.params.cardId)
+  const { cardId } = req.params;
+  Card.findById(cardId)
     .then((card) => {
       if (card == null) {
         res.status(404).send({ message: 'Карточка с таким id не найдена' });
       } else {
-        res.send({ data: card });
+        const cardOwner = `${card.owner}`; // приводим к одному типу для соблюдения стандарта линтера при использовании оператров сравнения
+        const userId = `${req.user._id}`;
+        if (userId === cardOwner) {
+          Card.findByIdAndRemove(cardId)
+            .then((mycard) => res.send({ message: 'Карточка удалена', data: mycard }))
+            .catch((err) => res.status(500).send({ message: err.message }));
+        } else {
+          res.status(403).send({ message: 'Нет прав на удаление этой карточки' });
+        }
       }
     })
     .catch((err) => res.status(500).send({ message: err.message }));

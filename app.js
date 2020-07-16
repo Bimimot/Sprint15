@@ -15,7 +15,7 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
 const cardsRouter = require('./routes/cards.js'); // импортируем роутер для карточек
 const usersRouter = require('./routes/users.js'); // импортируем роутер для данных о пользователях
 
-app.use(bodyParser.json()); // для собирания JSON-формата
+app.use(bodyParser.json()); // для сборки JSON-формата
 
 app.use('/users', usersRouter); // подключаем usersRouter
 app.use('/cards', cardsRouter); // подключаем cardsRoute
