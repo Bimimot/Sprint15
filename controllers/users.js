@@ -42,6 +42,7 @@ module.exports.createUser = (req, res) => {
 };
 
 // обновление данных пользователя
+// user._id получаем из токена после прохождения авторизации
 module.exports.patchUser = (req, res) => {
   const { name, about } = req.body;
   User.findByIdAndUpdate(req.user._id, { name, about },
@@ -66,6 +67,7 @@ module.exports.patchUser = (req, res) => {
 };
 
 // обновление аватара пользователя
+// user._id получаем из токена после прохождения авторизации
 module.exports.patchUserAvatar = (req, res) => {
   User.findByIdAndUpdate(req.user._id, { avatar: req.body.avatar },
     {

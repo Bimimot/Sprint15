@@ -19,13 +19,13 @@ module.exports.postCard = (req, res) => {
 // удаление карточки по id
 module.exports.delCard = (req, res) => {
   const { cardId } = req.params;
+  const userId = `${req.user._id}`;
   Card.findById(cardId)
     .then((card) => {
       if (card == null) {
         res.status(404).send({ message: 'Карточка с таким id не найдена' });
       } else {
         const cardOwner = `${card.owner}`; // приводим к одному типу для соблюдения стандарта линтера при использовании оператров сравнения
-        const userId = `${req.user._id}`;
         if (userId === cardOwner) {
           Card.findByIdAndRemove(cardId)
             .then((mycard) => res.send({ message: 'Карточка удалена', data: mycard }))
