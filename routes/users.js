@@ -5,8 +5,8 @@ const {
   getUsers, getUserById, createUser, patchUser, patchUserAvatar, login,
 } = require('../controllers/users'); // импорт методов из контроллера
 
-router.post('/signin', login); // вызываем метод аторизации пользователя
-router.post('/signup', createUser); // вызываем метод регистрации пользователя
+// router.post('/signin', login); // вызываем метод аторизации пользователя
+// router.post('/signup', createUser); // вызываем метод регистрации пользователя
 
 router.use(auth); // вызываем авторизацию для всех методов идущих ниже
 
