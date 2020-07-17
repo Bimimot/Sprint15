@@ -40,22 +40,28 @@ module.exports.delCard = (req, res) => {
 
 // поставить лайк карточки, сохранить id пользователя в массив лайков
 module.exports.likeCard = (req, res) => {
-  //const { cardId } = req.params.cardId;
+  // const { cardId } = req.params.cardId;
   // const { userId } = req.user;
-  res.send({ message: 'method likeCard' });
-  // Card.findByIdAndUpdate(
-  //   req.params.cardId,
-  //   { $addToSet: { likes: req.user._id } }, // добавить _id в массив, если его там нет
-  //   { new: true },
-  // )
-  //   .then((card) => {
-  //     if (card == null) {
-  //       res.status(404).send({ message: 'Карточка с таким id не найдена' });
-  //     } else {
-  //       res.send({ data: card });
-  //     }
-  //   })
-  //   .catch((err) => res.status(500).send({ message: err.message }));
+//  res.send({ method: 'method likeCard', card: req.params.cardId, user: req.user._id });
+  Card.findByIdAndUpdate(
+    req.params.cardId,
+    { $addToSet: { likes: req.user._id } }, // добавить _id в массив, если его там нет
+    { new: true },
+  )
+    .then((card) => {
+      if (card == null) {
+        res.status(404).send({ message: 'Карточка с таким id не найдена' });
+      } else {
+        res.send({ data: card });
+      }
+    })
+    .catch((err) => {
+      if (err.name === 'CastError' || err.name === 'ValidationError') {
+        res.status(400).send({ message: 'id карточки передан в неверном формате' });
+      } else {
+        res.status(500).send({ message: err.name });
+      }
+    });
 };
 
 // убрать лайк с карточки, убрать id пользователя из массива лайков
@@ -72,5 +78,11 @@ module.exports.dislikeCard = (req, res) => {
         res.send({ data: card });
       }
     })
-    .catch((err) => res.status(500).send({ message: err.message }));
+    .catch((err) => {
+      if (err.name === 'CastError' || err.name === 'ValidationError') {
+        res.status(400).send({ message: 'id карточки передан в неверном формате' });
+      } else {
+        res.status(500).send({ message: err.name });
+      }
+    });
 };
