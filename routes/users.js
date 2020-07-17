@@ -2,11 +2,7 @@ const router = require('express').Router();
 const auth = require('../middlewares/auth'); // подключаем мидлвэру авторизации
 
 const {
-  getUsers, getUserById, createUser, patchUser, patchUserAvatar, login,
-} = require('../controllers/users'); // импорт методов из контроллера
-
-// router.post('/signin', login); // вызываем метод аторизации пользователя
-// router.post('/signup', createUser); // вызываем метод регистрации пользователя
+  getUsers, getUserById, patchUser, patchUserAvatar } = require('../controllers/users'); // импорт методов из контроллера
 
 router.use(auth); // вызываем авторизацию для всех методов идущих ниже
 
