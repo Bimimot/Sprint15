@@ -13,9 +13,14 @@ module.exports.postCard = (req, res) => {
   const owner = req.user; // берем id, полученный из милдверы авторизации
   Card.create({ name, link, owner })
     .then((card) => res.send({ data: card }))
-    .catch((err) => res.status(500).send({ message: err.message }));
+    .catch((err) => {
+      if (err.name === 'CastError' || err.name === 'ValidationError') {
+        res.status(400).send({ message: 'Данные карточки переданы в неверном формате' });
+      } else {
+        res.status(500).send({ message: err.name });
+      }
+    });
 };
-
 // удаление карточки по id
 module.exports.delCard = (req, res) => {
   const { cardId } = req.params;
@@ -35,7 +40,13 @@ module.exports.delCard = (req, res) => {
         }
       }
     })
-    .catch((err) => res.status(500).send({ message: err.message }));
+    .catch((err) => {
+      if (err.name === 'CastError' || err.name === 'ValidationError') {
+        res.status(400).send({ message: 'id карточки передан в неверном формате' });
+      } else {
+        res.status(500).send({ message: err.name });
+      }
+    });
 };
 
 // поставить лайк карточки, сохранить id пользователя в массив лайков
