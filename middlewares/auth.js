@@ -1,9 +1,8 @@
 /* eslint-disable consistent-return */
 // отключен запрет линтера на отсутствие return в стрелочной функции
 
-// middlewares/auth.js
-
 const jwt = require('jsonwebtoken'); // подключаем модуль создания jwt токенов
+const { cryptoKey } = require('../key'); // импорт ключа для зашифровки токена
 
 module.exports = (req, res, next) => {
   const { authorization } = req.headers;
@@ -18,7 +17,7 @@ module.exports = (req, res, next) => {
   let payload;
 
   try {
-    payload = jwt.verify(token, 'secret-key'); // расшиифровываем токен при помощи метода и ключа, получаем содержимое - пейлоад
+    payload = jwt.verify(token, cryptoKey); // расшиифровываем токен ключа, получаем пейлоад
   } catch (err) {
     return res
       .status(401)

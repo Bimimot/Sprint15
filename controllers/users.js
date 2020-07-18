@@ -1,6 +1,7 @@
 const bcrypt = require('bcryptjs'); // импорт модуля для создания хешей
 const jwt = require('jsonwebtoken'); // импорт модуля для создания токенов
 const User = require('../models/user');
+const { cryptoKey } = require('../key'); // импорт ключа для зашифровки токена
 
 // поиск всех пользователей
 module.exports.getUsers = (req, res) => {
@@ -109,7 +110,7 @@ module.exports.login = (req, res) => {
 
   return User.findUserByCredentials(email, password)
     .then((user) => {
-      const token = jwt.sign({ _id: user._id }, 'secret-key', { expiresIn: '7d' }); // создали токен
+      const token = jwt.sign({ _id: user._id }, cryptoKey, { expiresIn: '7d' }); // создали токен
       res.send({ token });
     })
     .catch((err) => {
