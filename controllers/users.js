@@ -44,7 +44,8 @@ module.exports.createUser = (req, res) => {
       if (err.name === 'CastError' || err.name === 'ValidationError') {
         res.status(400).send({ message: 'Данные пользователя заданы в неверном формате' });
       } else
-      if (err.code === 11000) { res.status(409).send({ message: 'Пользователь с таким email уже существует' });
+      if (err.code === 11000) {
+        res.status(409).send({ message: 'Пользователь с таким email уже существует' });
       } else {
         res.status(500).send({ message: err.name });
       }
