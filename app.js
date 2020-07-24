@@ -29,6 +29,10 @@ app.use((req, res) => { // если запрос на несуществующу
   res.status(404).send({ message: 'Запрашиваемый ресурс не найден' });
 });
 
+app.use((err, req, res, next) => { // централизованная обработка ошибок, сюда переходим через next из мидлвэры для генерации ошибки
+  res.status(err.statusCode).send({ message: err.message });
+});
+
 app.listen(PORT, () => {
   console.log('Express server started on port', PORT); // eslint-disable-line no-console
 }); // начинаем слушать заданный порт

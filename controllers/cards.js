@@ -1,4 +1,7 @@
 const Card = require('../models/card');
+const {
+  BadFormatError, AuthError, AccessDeniedError, NotFoundError, DoubleDataError, ServerError,
+} = require('../middlewares/errors');
 
 // поиск всех карточек
 module.exports.getCards = (req, res) => {
