@@ -25,12 +25,20 @@ app.use('/cards', cardsRouter); // подключаем cardsRoute
 app.post('/signin', login);
 app.post('/signup', createUser);
 
-app.use((req, res) => { // если запрос на несуществующую страницу
-  res.status(404).send({ message: 'Запрашиваемый ресурс не найден' });
+app.use((err, req, res, next) => { // обработка ошибок, сюда переходим из блока catch
+  if (!err.statusCode) { // если ошибка пришла без кода
+    if (err.name === 'CastError' || err.name === 'ValidationError') {
+      res.status(400).send({ message: 'Данные переданы в неверном формате' }); // либо неверные данные
+    } else {
+      res.status(500).send({ message: 'На сервере произошла ошибка' }); // либо считаем ошибкой сервера
+    }
+  } else {
+    res.status(err.statusCode).send({ message: err.message });
+  }
 });
 
-app.use((err, req, res, next) => { // централизованная обработка ошибок, сюда переходим через next из мидлвэры для генерации ошибки
-  res.status(err.statusCode).send({ message: err.message });
+app.use((req, res) => { // если запрос на несуществующую страницу
+  res.status(404).send({ message: 'Запрашиваемый ресурс не найден' });
 });
 
 app.listen(PORT, () => {

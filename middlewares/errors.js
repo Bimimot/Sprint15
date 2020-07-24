@@ -1,3 +1,5 @@
+/* eslint-disable max-len */
+/* eslint-disable max-classes-per-file */
 class BadFormatError extends Error { // данные переданы в неверном формате
   constructor(message) {
     super(message);
@@ -40,4 +42,6 @@ class ServerError extends Error { // ресурс не найден
   }
 }
 
-module.exports = BadFormatError, AuthError, AccessDeniedError, NotFoundError, DoubleDataError, ServerError;
+module.exports = {
+ BadFormatError, AuthError, AccessDeniedError, NotFoundError, DoubleDataError, ServerError
+};
