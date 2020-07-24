@@ -2,35 +2,30 @@ const bcrypt = require('bcryptjs'); // импорт модуля для созд
 const jwt = require('jsonwebtoken'); // импорт модуля для создания токенов
 const User = require('../models/user');
 const { cryptoKey } = require('../key'); // импорт ключа для зашифровки токена
+const { AuthError, NotFoundError, DoubleDataError } = require('../middlewares/errors');
 
 // поиск всех пользователей
-module.exports.getUsers = (req, res) => {
+module.exports.getUsers = (req, res, next) => {
   User.find({})
     .then((users) => res.send({ data: users }))
-    .catch((err) => res.status(500).send({ message: err.message }));
+    .catch(next);
 };
 
 // поиск пользователя по id
-module.exports.getUserById = (req, res) => {
+module.exports.getUserById = (req, res, next) => {
   User.findById(req.params.id)
     .then((user) => {
       if (user == null) {
-        res.status(404).send({ message: 'Нет такого пользователя' });
+        throw new NotFoundError('Такой пользователь не найден'); // создаем ошибку и переходим в обработчик ошибок
       } else {
         res.send({ data: user });
       }
     })
-    .catch((err) => {
-      if (err.name === 'CastError' || err.name === 'ValidationError') {
-        res.status(400).send({ message: 'id пользователя передан в неверном формате' });
-      } else {
-        res.status(500).send({ message: err.name });
-      }
-    });
+    .catch(next);
 };
 
 // создание пользователя
-module.exports.createUser = (req, res) => {
+module.exports.createUser = (req, res, next) => {
   const {
     name, about, avatar, email, password,
   } = req.body;
@@ -42,22 +37,14 @@ module.exports.createUser = (req, res) => {
       _id: user._id, name: user.name, about: user.about, avatar: user.avatar, email: user.email,
     }))
     .catch((err) => {
-      if (err.name === 'CastError' || err.name === 'ValidationError') {
-        res.status(400).send({ message: 'Данные пользователя заданы в неверном формате' });
-      } else
-      if (err.code === 11000) {
-        res.status(409).send({ message: 'Пользователь с таким email уже существует' });
-      } else {
-        res.status(500).send({ message: err.name });
-      }
+      if (err.code === 11000) { next(new DoubleDataError('Пользователь с таким email уже существует')); }
+      next(err);
     });
 };
 
-// err.code = 11000
-
 // обновление данных пользователя
 // user._id получаем из токена после прохождения авторизации
-module.exports.patchUser = (req, res) => {
+module.exports.patchUser = (req, res, next) => {
   const { name, about } = req.body;
   User.findByIdAndUpdate(req.user._id, { name, about },
     {
@@ -66,23 +53,17 @@ module.exports.patchUser = (req, res) => {
     })
     .then((user) => {
       if (user == null) {
-        res.status(404).send({ message: 'Пользователь с таким id не найден' });
+        throw new NotFoundError('Такой пользователь не найден'); // создаем ошибку и переходим в обработчик ошибок
       } else {
         res.send({ data: user });
       }
     })
-    .catch((err) => {
-      if (err.name === 'CastError' || err.name === 'ValidationError') {
-        res.status(400).send({ message: 'Данные пользователя переданы в неверном формате' });
-      } else {
-        res.status(500).send({ message: err.name });
-      }
-    });
+    .catch(next);
 };
 
 // обновление аватара пользователя
 // user._id получаем из токена после прохождения авторизации
-module.exports.patchUserAvatar = (req, res) => {
+module.exports.patchUserAvatar = (req, res, next) => {
   User.findByIdAndUpdate(req.user._id, { avatar: req.body.avatar },
     {
       new: true, // обработчик then получит на вход обновлённую запись
@@ -90,22 +71,16 @@ module.exports.patchUserAvatar = (req, res) => {
     })
     .then((user) => {
       if (user == null) {
-        res.status(404).send({ message: 'Нет такого пользователя' });
+        throw new NotFoundError('Такой пользователь не найден'); // создаем ошибку и переходим в обработчик ошибок
       } else {
         res.send({ data: user });
       }
     })
-    .catch((err) => {
-      if (err.name === 'CastError' || err.name === 'ValidationError') {
-        res.status(400).send({ message: 'Ссылка на аватар пользователя передана в неверном формате' });
-      } else {
-        res.status(500).send({ message: err.name });
-      }
-    });
+    .catch(next);
 };
 
 // авторизация пользователя
-module.exports.login = (req, res) => {
+module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
 
   return User.findUserByCredentials(email, password)
@@ -113,9 +88,5 @@ module.exports.login = (req, res) => {
       const token = jwt.sign({ _id: user._id }, cryptoKey, { expiresIn: '7d' }); // создали токен
       res.send({ token });
     })
-    .catch((err) => {
-      res
-        .status(401)
-        .send({ message: err.message });
-    });
+    .catch(next(new AuthError('Ошибка авторизации')));
 };

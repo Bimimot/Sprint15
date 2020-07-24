@@ -12,9 +12,9 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
   useFindAndModify: false,
 });
 
+const { BadFormatError, ServerError } = require('./middlewares/errors'); // импорт конструкторов типовых ошибок
 const cardsRouter = require('./routes/cards.js'); // импортируем роутер для карточек
 const usersRouter = require('./routes/users.js'); // импортируем роутер для данных о пользователях
-
 const { createUser, login } = require('./controllers/users'); // импорт методов авторизации из контроллера
 
 app.use(bodyParser.json()); // для сборки JSON-формата
@@ -28,13 +28,12 @@ app.post('/signup', createUser);
 app.use((err, req, res, next) => { // обработка ошибок, сюда переходим из блока catch
   if (!err.statusCode) { // если ошибка пришла без кода
     if (err.name === 'CastError' || err.name === 'ValidationError') {
-      res.status(400).send({ message: 'Данные переданы в неверном формате' }); // либо неверные данные
+      err = new BadFormatError('Данные переданы в неверном формате');
     } else {
-      res.status(500).send({ message: 'На сервере произошла ошибка' }); // либо считаем ошибкой сервера
+      err = new ServerError('На сервере произошла ошибка');
     }
-  } else {
-    res.status(err.statusCode).send({ message: err.message });
   }
+  res.status(err.statusCode).send({ message: err.message });
 });
 
 app.use((req, res) => { // если запрос на несуществующую страницу
@@ -44,3 +43,6 @@ app.use((req, res) => { // если запрос на несуществующу
 app.listen(PORT, () => {
   console.log('Express server started on port', PORT); // eslint-disable-line no-console
 }); // начинаем слушать заданный порт
+
+//      const err = new BadFormatError('Данные переданы в неверном формате');
+//      const err = new ServerError('На сервере произошла ошибка');
