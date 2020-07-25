@@ -80,7 +80,7 @@ module.exports.patchUserAvatar = (req, res, next) => {
 };
 
 // авторизация пользователя
-module.exports.login = (req, res, next) => {
+module.exports.login = (req, res) => {
   const { email, password } = req.body;
 
   return User.findUserByCredentials(email, password)
@@ -88,5 +88,5 @@ module.exports.login = (req, res, next) => {
       const token = jwt.sign({ _id: user._id }, cryptoKey, { expiresIn: '7d' }); // создали токен
       res.send({ token });
     })
-    .catch(next(new AuthError('Ошибка авторизации')));
+    .catch(new AuthError('Ошибка авторизации'));
 };

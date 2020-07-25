@@ -12,7 +12,7 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
   useFindAndModify: false,
 });
 
-const { errors } = require('celebrate'); // импорт мидлвэры обработки ошибок при валидации запросов
+const { celebrate, Joi, errors } = require('celebrate'); // импорт обработки ошибок при валидации запросов
 const { BadFormatError, ServerError } = require('./middlewares/errors'); // импорт конструкторов типовых ошибок
 const cardsRouter = require('./routes/cards.js'); // импортируем роутер для карточек
 const usersRouter = require('./routes/users.js'); // импортируем роутер для данных о пользователях
@@ -24,9 +24,25 @@ app.use('/users', usersRouter); // подключаем usersRouter
 app.use('/cards', cardsRouter); // подключаем cardsRoute
 
 app.post('/signin', login);
-app.post('/signup', createUser);
+// celebrate({
+//   body: Joi.object().keys({
+//     email: Joi.string().required().email(),
+//     password: Joi.string().required().min(6),
+//   }),
+// }),
+// login);
 
-app.use(errors()); // обработка ошибок celebrate
+app.post('/signup', celebrate({
+  body: Joi.object().keys({
+    name: Joi.string().required().min(2).max(30),
+    about: Joi.string().required().min(2).max(30),
+    avatar: Joi.string().required().uri(),
+    email: Joi.string().required().email(),
+    password: Joi.string().required().min(6),
+  }),
+}), createUser);
+
+app.use(errors()); // обработка ошибок celebrate при помощи мидлвэры celebrate
 
 app.use((err, req, res, next) => { // обработка ошибок, сюда переходим из блока catch
   if (!err.statusCode) { // если ошибка пришла без кода

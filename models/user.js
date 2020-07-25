@@ -38,8 +38,7 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
     select: false,
-    minlength: 8,
-    maxlength: 30,
+    minlength: 6,
   },
 });
 
@@ -51,11 +50,11 @@ userSchema.statics.findUserByCredentials = function checkUser(email, password) {
       }
 
       return bcrypt.compare(password, user.password) // сравнение хэшей
+
         .then((matched) => {
           if (!matched) {
             return Promise.reject(new Error('Неправильные почта или пароль'));
           }
-
           return user; // возвращаем объект user для использования в контроллерах
         });
     });
