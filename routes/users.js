@@ -23,7 +23,7 @@ router.patch('/me', celebrate({
 
 router.patch('/me/avatar', celebrate({
   body: Joi.object().keys({
-    avatar: Joi.string().required().url(),
+    avatar: Joi.string().required().uri(),
   }),
 }), patchUserAvatar); // вызываем метод обновления ссылки на аватар пользователя
 

@@ -12,6 +12,7 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
   useFindAndModify: false,
 });
 
+const { errors } = require('celebrate'); // импорт мидлвэры обработки ошибок при валидации запросов
 const { BadFormatError, ServerError } = require('./middlewares/errors'); // импорт конструкторов типовых ошибок
 const cardsRouter = require('./routes/cards.js'); // импортируем роутер для карточек
 const usersRouter = require('./routes/users.js'); // импортируем роутер для данных о пользователях
@@ -24,6 +25,8 @@ app.use('/cards', cardsRouter); // подключаем cardsRoute
 
 app.post('/signin', login);
 app.post('/signup', createUser);
+
+app.use(errors()); // обработка ошибок celebrate
 
 app.use((err, req, res, next) => { // обработка ошибок, сюда переходим из блока catch
   if (!err.statusCode) { // если ошибка пришла без кода
