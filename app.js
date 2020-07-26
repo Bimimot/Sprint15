@@ -13,17 +13,19 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
 });
 
 const { celebrate, Joi, errors } = require('celebrate'); // импорт обработки ошибок при валидации запросов
-const { BadFormatError, ServerError } = require('./middlewares/errors'); // импорт конструкторов типовых ошибок
+const { ServerError } = require('./middlewares/errors'); // импорт конструкторов типовых ошибок
 const cardsRouter = require('./routes/cards.js'); // импортируем роутер для карточек
 const usersRouter = require('./routes/users.js'); // импортируем роутер для данных о пользователях
 const { createUser, login } = require('./controllers/users'); // импорт методов авторизации из контроллера
+const { requestLogger, errorLogger } = require('./middlewares/logger');
 
-app.use(bodyParser.json()); // для сборки JSON-формата
+app.use(bodyParser.json()); // подключаем сборку JSON-формата
+app.use(requestLogger); // подключаем логирование запросов
 
 app.use('/users', usersRouter); // подключаем usersRouter
 app.use('/cards', cardsRouter); // подключаем cardsRoute
 
-app.post('/signin',
+app.post('/signin', // подключаем контроллер авторизации
   celebrate({
     body: Joi.object().keys({
       email: Joi.string().required().email(),
@@ -32,7 +34,7 @@ app.post('/signin',
   }),
   login);
 
-app.post('/signup', celebrate({
+app.post('/signup', celebrate({ // подключаем контроллер регистрации
   body: Joi.object().keys({
     name: Joi.string().required().min(2).max(30),
     about: Joi.string().required().min(2).max(30),
@@ -42,17 +44,14 @@ app.post('/signup', celebrate({
   }),
 }), createUser);
 
+app.use(errorLogger); // подключаем логирование ошибок
 app.use(errors()); // обработка ошибок celebrate при помощи мидлвэры celebrate
-
 app.use((err, req, res, next) => { // обработка ошибок, сюда переходим из блока catch
-  if (!err.statusCode) { // если ошибка пришла без кода
-    if (err.name === 'CastError' || err.name === 'ValidationError') {
-      err = new BadFormatError('Данные переданы в неверном формате');
-    } else {
-      err = new ServerError('На сервере произошла ошибка');
-    }
+  if (!err.statusCode) { // если ошибка пришла без кода - ставим ошибку сервера
+    err = new ServerError('На сервере произошла ошибка');
   }
   res.status(err.statusCode).send({ message: err.message });
+  next();
 });
 
 app.use((req, res) => { // если запрос на несуществующую страницу
@@ -62,6 +61,3 @@ app.use((req, res) => { // если запрос на несуществующу
 app.listen(PORT, () => {
   console.log('Express server started on port', PORT); // eslint-disable-line no-console
 }); // начинаем слушать заданный порт
-
-//      const err = new BadFormatError('Данные переданы в неверном формате');
-//      const err = new ServerError('На сервере произошла ошибка');
