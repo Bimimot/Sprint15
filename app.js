@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express'); // модуль ноды для http сервера
 const mongoose = require('mongoose'); // модуль ноды для подключения сервера с базой данных
 const bodyParser = require('body-parser'); // модуль ноды для парсинга пост-запросов в нужный (json) формат
