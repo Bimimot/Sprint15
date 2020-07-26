@@ -23,14 +23,14 @@ app.use(bodyParser.json()); // для сборки JSON-формата
 app.use('/users', usersRouter); // подключаем usersRouter
 app.use('/cards', cardsRouter); // подключаем cardsRoute
 
-app.post('/signin', login);
-// celebrate({
-//   body: Joi.object().keys({
-//     email: Joi.string().required().email(),
-//     password: Joi.string().required().min(6),
-//   }),
-// }),
-// login);
+app.post('/signin',
+  celebrate({
+    body: Joi.object().keys({
+      email: Joi.string().required().email(),
+      password: Joi.string().required().min(6),
+    }),
+  }),
+  login);
 
 app.post('/signup', celebrate({
   body: Joi.object().keys({
