@@ -2,7 +2,7 @@ const bcrypt = require('bcryptjs'); // импорт модуля для созд
 const jwt = require('jsonwebtoken'); // импорт модуля для создания токенов
 const User = require('../models/user');
 const { cryptoKey } = require('../key'); // импорт ключа для зашифровки токена
-const { AuthError, NotFoundError, DoubleDataError } = require('../middlewares/errors');
+const { NotFoundError, DoubleDataError } = require('../middlewares/errors');
 
 // поиск всех пользователей
 module.exports.getUsers = (req, res, next) => {

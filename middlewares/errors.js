@@ -43,5 +43,5 @@ class ServerError extends Error { // ресурс не найден
 }
 
 module.exports = {
- BadFormatError, AuthError, AccessDeniedError, NotFoundError, DoubleDataError, ServerError
+  BadFormatError, AuthError, AccessDeniedError, NotFoundError, DoubleDataError, ServerError,
 };

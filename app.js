@@ -27,9 +27,9 @@ app.use('/users', usersRouter); // подключаем usersRouter
 app.use('/cards', cardsRouter); // подключаем cardsRoute
 
 app.get('/crash-test', () => { // для проверки работы pm2
-    setTimeout(() => {
-        throw new Error('Сервер сейчас упадёт');
-    }, 0);
+  setTimeout(() => {
+    throw new Error('Сервер сейчас упадёт');
+  }, 0);
 });
 
 app.post('/signin', // подключаем контроллер авторизации
@@ -55,6 +55,7 @@ app.use(errorLogger); // подключаем логирование ошибо�
 app.use(errors()); // обработка ошибок celebrate при помощи мидлвэры celebrate
 app.use((err, req, res, next) => { // обработка ошибок, сюда переходим из блока catch
   if (!err.statusCode) { // если ошибка пришла без кода - ставим ошибку сервера
+    // eslint-disable-next-line no-param-reassign
     err = new ServerError('На сервере произошла ошибка');
   }
   res.status(err.statusCode).send({ message: err.message });
