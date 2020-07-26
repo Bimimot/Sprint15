@@ -1,3 +1,6 @@
+# NODE-ENV
+*.env
+
 # Logs
 logs
 *.log
