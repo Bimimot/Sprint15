@@ -26,6 +26,12 @@ app.use(requestLogger); // подключаем логирование запр�
 app.use('/users', usersRouter); // подключаем usersRouter
 app.use('/cards', cardsRouter); // подключаем cardsRoute
 
+app.get('/crash-test', () => { // для проверки работы pm2
+    setTimeout(() => {
+        throw new Error('Сервер сейчас упадёт');
+    }, 0);
+});
+
 app.post('/signin', // подключаем контроллер авторизации
   celebrate({
     body: Joi.object().keys({
