@@ -14,7 +14,7 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
 });
 
 const { celebrate, Joi, errors } = require('celebrate'); // импорт обработки ошибок при валидации запросов
-const { ServerError } = require('./middlewares/errors'); // импорт конструкторов типовых ошибок
+const { NotFoundError, ServerError } = require('./middlewares/errors'); // импорт конструкторов типовых ошибок
 const cardsRouter = require('./routes/cards.js'); // импортируем роутер для карточек
 const usersRouter = require('./routes/users.js'); // импортируем роутер для данных о пользователях
 const { createUser, login } = require('./controllers/users'); // импорт методов авторизации из контроллера
@@ -53,18 +53,16 @@ app.post('/signup', celebrate({ // подключаем контроллер р�
 
 app.use(errorLogger); // подключаем логирование ошибок
 app.use(errors()); // обработка ошибок celebrate при помощи мидлвэры celebrate
-
-app.use((err, req, res) => { // обработка ошибок, сюда переходим из блока catch
-  if (!err.statusCode) { // если ошибка пришла без кода - ставим ошибку сервера
-    // eslint-disable-next-line no-param-reassign
-    err = new ServerError('На сервере произошла ошибка');
-  }
-  return res.status(err.statusCode).send({ message: err.message });
+app.use((req, res, next) => { // если запрос на несуществующую страницу
+  next(new NotFoundError('Такой ресурс не найден'));
 });
 
-// app.use((req, res) => { // если запрос на несуществующую страницу
-//   res.status(404).send({ message: 'Запрашиваемый ресурс не найден' });
-// });
+app.use((err, req, res, next) => { // обработка ошибок, сюда переходим из блока catch
+  if (!err.statusCode) { // если ошибка пришла без кода - ставим ошибку сервера
+    err = new ServerError('На сервере произошла ошибка');
+  }
+  return res.status(err.statusCode).send({ message: err.message, status: err.statusCode });
+});
 
 app.listen(PORT, () => {
   console.log('Express server started on port', PORT); // eslint-disable-line no-console
