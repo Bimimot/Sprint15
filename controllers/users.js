@@ -4,6 +4,8 @@ const User = require('../models/user');
 const { cryptoKey } = require('../key'); // импорт ключа для зашифровки токена
 const { NotFoundError, DoubleDataError } = require('../middlewares/errors');
 
+
+
 // поиск всех пользователей
 module.exports.getUsers = (req, res, next) => {
   User.find({})
