@@ -53,18 +53,18 @@ app.post('/signup', celebrate({ // подключаем контроллер р�
 
 app.use(errorLogger); // подключаем логирование ошибок
 app.use(errors()); // обработка ошибок celebrate при помощи мидлвэры celebrate
-app.use((err, req, res, next) => { // обработка ошибок, сюда переходим из блока catch
+
+app.use((err, req, res) => { // обработка ошибок, сюда переходим из блока catch
   if (!err.statusCode) { // если ошибка пришла без кода - ставим ошибку сервера
     // eslint-disable-next-line no-param-reassign
     err = new ServerError('На сервере произошла ошибка');
   }
-  res.status(err.statusCode).send({ message: err.message });
-  next();
+  return res.status(err.statusCode).send({ message: err.message });
 });
 
-app.use((req, res) => { // если запрос на несуществующую страницу
-  res.status(404).send({ message: 'Запрашиваемый ресурс не найден' });
-});
+// app.use((req, res) => { // если запрос на несуществующую страницу
+//   res.status(404).send({ message: 'Запрашиваемый ресурс не найден' });
+// });
 
 app.listen(PORT, () => {
   console.log('Express server started on port', PORT); // eslint-disable-line no-console
