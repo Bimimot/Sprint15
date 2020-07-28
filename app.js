@@ -58,13 +58,9 @@ app.use((req, res, next) => { // если запрос на несуществу
 app.use(errorLogger); // подключаем логирование ошибок
 
 app.use((err, req, res, next) => { // обработка ошибок, сюда переходим из блоков catch
-  if (err) {
-    if (err.joi || (err.name === 'CastError') || (err.name === 'ValidationError')) { err = new BadFormatError('Указаны неправильные данные'); } // eslint-disable-line no-param-reassign
-    if (!err.statusCode) { // если ошибка пришла без кода - ставим ошибку сервера
-      err = new ServerError('На сервере произошла ошибка'); // eslint-disable-line no-param-reassign
-      return res.status(err.statusCode).send({ message: err.message, status: err.statusCode }) }
-  }
-  next();
+  if (err.joi || (err.name === 'CastError') || (err.name === 'ValidationError')) { err = new BadFormatError('Указаны неправильные данные'); } // eslint-disable-line no-param-reassign
+  if (!err.statusCode) { err = new ServerError('На сервере произошла ошибка'); }// eslint-disable-line no-param-reassign
+  return res.status(err.statusCode).send({ message: err.message, status: err.statusCode });
 });
 
 app.listen(PORT, () => {
