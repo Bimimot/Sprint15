@@ -57,9 +57,15 @@ app.use((req, res, next) => { // если запрос на несуществу
 
 app.use(errorLogger); // подключаем логирование ошибок
 
+// eslint-disable-next-line no-unused-vars
 app.use((err, req, res, next) => { // обработка ошибок, сюда переходим из блоков catch
-  if (err.joi || (err.name === 'CastError') || (err.name === 'ValidationError')) { err = new BadFormatError('Указаны неправильные данные'); } // eslint-disable-line no-param-reassign
-  if (!err.statusCode) { err = new ServerError('На сервере произошла ошибка'); }// eslint-disable-line no-param-reassign
+  console.log(err);
+  if (err.joi || (err.name === 'CastError') || (err.name === 'ValidationError') || (err.name === 'MongoError')) {
+    err = new BadFormatError('Указаны неправильные данные'); // eslint-disable-line no-param-reassign
+  }
+  if (!err.statusCode) {
+    err = new ServerError('На сервере произошла ошибка'); // eslint-disable-line no-param-reassign
+  }
   return res.status(err.statusCode).send({ message: err.message, status: err.statusCode });
 });
 

@@ -19,8 +19,14 @@ router.post('/', celebrate({
   }),
 }), postCard); // вызываем метод добавлени карточки
 
-router.delete('/:cardId', delCard); // вызываем метод удаления карточки
-router.put('/:cardId/likes', likeCard); // вызываем метод устновки лайка
-router.delete('/:cardId/likes', dislikeCard); // вызываем метод снятия лайка
+router.delete('/:cardId', celebrate({
+  params: Joi.object().keys({ cardId: Joi.string().hex().length(24) }),
+}), delCard); // вызываем метод удаления карточки
+router.put('/:cardId/likes', celebrate({
+  params: Joi.object().keys({ cardId: Joi.string().hex().length(24) }),
+}), likeCard); // вызываем метод устновки лайка
+router.delete('/:cardId/likes', celebrate({
+  params: Joi.object().keys({ cardId: Joi.string().hex().length(24) }),
+}), dislikeCard); // вызываем метод снятия лайка
 
 module.exports = router;

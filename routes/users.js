@@ -12,7 +12,7 @@ router.use(auth); // вызываем авторизацию для всех м�
 router.get('/', getUsers); // вызываем метод получения всех пользователей
 
 router.get('/:id', celebrate({
-  params: Joi.object().keys({ id: Joi.string().alphanum().length(24) }),
+  params: Joi.object().keys({ id: Joi.string().hex().length(24) }),
 }), getUserById); // вызываем метод получения пользователя по id
 
 router.patch('/me', celebrate({
