@@ -4,7 +4,7 @@ const mongoose = require('mongoose'); // модуль ноды для подкл
 const bodyParser = require('body-parser'); // модуль ноды для парсинга пост-запросов в нужный (json) формат
 const validatorNpm = require('validator');
 
-const { BadFormatError } = require('../middlewares/errors');
+const { NODE_ENV } = process.env;
 const app = express();
 const { PORT = 3000 } = process.env;
 
@@ -15,6 +15,7 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
   useFindAndModify: false,
 });
 
+// eslint-disable-next-line no-unused-vars
 const { celebrate, Joi, errors } = require('celebrate'); // импорт обработки ошибок при валидации запросов
 const { NotFoundError, ServerError, BadFormatError } = require('./middlewares/errors'); // импорт конструкторов типовых ошибок
 const cardsRouter = require('./routes/cards.js'); // импортируем роутер для карточек
@@ -49,16 +50,16 @@ app.post('/signup', celebrate({ // подключаем контроллер р�
     about: Joi.string().required().min(2).max(30),
     avatar: Joi.string().required()
       .custom((value) => {
-      if (!validatorNpm.isURL(value)) {
-        throw new BadFormatError('Это неправильная ссылка');
-      } else { return value; }
-    }),
+        if (!validatorNpm.isURL(value)) {
+          throw new BadFormatError('Это неправильная ссылка');
+        } else { return value; }
+      }),
     email: Joi.string().required().email(),
     password: Joi.string().required().min(6),
   }),
 }), createUser);
 
-app.use((req, res, next) => { // если запрос на несуществующую страницу
+app.use((req, res, next) => { // генерируем ошибку если запрос на несуществующую страницу
   next(new NotFoundError('Такой ресурс не найден'));
 });
 
@@ -66,12 +67,13 @@ app.use(errorLogger); // подключаем логирование ошибо�
 
 // eslint-disable-next-line no-unused-vars
 app.use((err, req, res, next) => { // обработка ошибок, сюда переходим из блоков catch
-  console.log(err);
+  // обработка ошибок валидации, для режима разработки возвращаем полный текст ошибки
   if (err.joi || (err.name === 'CastError') || (err.name === 'ValidationError') || (err.name === 'MongoError')) {
-    err = new BadFormatError('В запросе указаны неправильные данные'); // eslint-disable-line no-param-reassign
+    err = new BadFormatError((NODE_ENV !== 'production') ? err : 'В запросе указаны неправильные данные'); // eslint-disable-line no-param-reassign
   }
+  // обработка ошибок без кода, для режима разработки возвращаем полный текст ошибки
   if (!err.statusCode) {
-    err = new ServerError('На сервере произошла ошибка'); // eslint-disable-line no-param-reassign
+    err = new ServerError((NODE_ENV !== 'production') ? err : 'На сервере произошла ошибка'); // eslint-disable-line no-param-reassign
   }
   return res.status(err.statusCode).send({ message: err.message, status: err.statusCode });
 });
