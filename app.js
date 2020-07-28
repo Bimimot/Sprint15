@@ -2,7 +2,9 @@ require('dotenv').config();
 const express = require('express'); // модуль ноды для http сервера
 const mongoose = require('mongoose'); // модуль ноды для подключения сервера с базой данных
 const bodyParser = require('body-parser'); // модуль ноды для парсинга пост-запросов в нужный (json) формат
+const validatorNpm = require('validator');
 
+const { BadFormatError } = require('../middlewares/errors');
 const app = express();
 const { PORT = 3000 } = process.env;
 
@@ -45,7 +47,12 @@ app.post('/signup', celebrate({ // подключаем контроллер р�
   body: Joi.object().keys({
     name: Joi.string().required().min(2).max(30),
     about: Joi.string().required().min(2).max(30),
-    avatar: Joi.string().required().uri(),
+    avatar: Joi.string().required()
+      .custom((value) => {
+      if (!validatorNpm.isURL(value)) {
+        throw new BadFormatError('Это неправильная ссылка');
+      } else { return value; }
+    }),
     email: Joi.string().required().email(),
     password: Joi.string().required().min(6),
   }),
@@ -61,7 +68,7 @@ app.use(errorLogger); // подключаем логирование ошибо�
 app.use((err, req, res, next) => { // обработка ошибок, сюда переходим из блоков catch
   console.log(err);
   if (err.joi || (err.name === 'CastError') || (err.name === 'ValidationError') || (err.name === 'MongoError')) {
-    err = new BadFormatError('Указаны неправильные данные'); // eslint-disable-line no-param-reassign
+    err = new BadFormatError('В запросе указаны неправильные данные'); // eslint-disable-line no-param-reassign
   }
   if (!err.statusCode) {
     err = new ServerError('На сервере произошла ошибка'); // eslint-disable-line no-param-reassign

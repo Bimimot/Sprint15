@@ -1,6 +1,8 @@
 const router = require('express').Router();
 const { celebrate, Joi } = require('celebrate'); // подключаем библиотеку для валидации запросов
-const urlRegex = require('url-regex'); // подключили регулярное выражение для валидации URL
+const validatorNpm = require('validator');
+
+const { BadFormatError } = require('../middlewares/errors');
 const auth = require('../middlewares/auth'); // подключаем мидлвэру авторизации
 
 const {
@@ -15,7 +17,11 @@ router.post('/', celebrate({
   body: Joi.object().keys({
     name: Joi.string().required().min(2).max(30),
     link: Joi.string().required()
-      .pattern(new RegExp(urlRegex().source)), // создаем чистое регулярное выражение без флагов
+      .custom((value) => {
+        if (!validatorNpm.isURL(value)) {
+          throw new BadFormatError('Это неправильная ссылка');
+        } else { return value; }
+      }),
   }),
 }), postCard); // вызываем метод добавлени карточки
 

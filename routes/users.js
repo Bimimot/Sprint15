@@ -1,7 +1,9 @@
 const router = require('express').Router();
 const { celebrate, Joi } = require('celebrate'); // подключаем библиотеку для валидации запросов
-const urlRegex = require('url-regex'); // подключили регулярное выражение для валидации URL
+const validatorNpm = require('validator');
+
 const auth = require('../middlewares/auth'); // подключаем мидлвэру авторизации
+const { BadFormatError } = require('../middlewares/errors');
 
 const {
   getUsers, getUserById, patchUser, patchUserAvatar,
@@ -25,30 +27,21 @@ router.patch('/me', celebrate({
 router.patch('/me/avatar', celebrate({
   body: Joi.object().keys({
     avatar: Joi.string().required()
-      .pattern(new RegExp(urlRegex().source)), // создаем чистое регулярное выражение без флагов
+      .custom((value) => {
+        if (!validatorNpm.isURL(value)) {
+          throw new BadFormatError('Это неправильная ссылка');
+        } else { return value; }
+      }),
   }),
 }), patchUserAvatar); // вызываем метод обновления ссылки на аватар пользователя
 
 module.exports = router;
 
-
-//    avatar: Joi.string().required().custom(validator.isURL(.....)),
-
-// Joi.object({
-//     password: Joi
-//         .string()
-//         .custom((value, helper) => {
-
-//             if (value.length < 8) {
-//                 return helper.message("Password must be at least 8 characters long")
-
-//             } else {
-//                 return true
-//             }
-
-//         })
-
-// }).validate({
-//     password: '1234'
-// });
-
+// вариант с RegEx валидацией ссылок
+// const urlRegex = require('url-regex'); // подключили регулярное выражение для валидации URL
+// router.patch('/me/avatar', celebrate({
+//   body: Joi.object().keys({
+//     avatar: Joi.string().required()
+//       .pattern(new RegExp(urlRegex().source)), // создаем чистое регулярное выражение без флагов
+//   }),
+// }), patchUserAvatar); // вызываем метод обновления ссылки на аватар
