@@ -13,8 +13,7 @@ Adress:
 ## PATCH --> 	/me			-->	{me, about} 		-->	обновление данных в профиле пользователя
 ## PATCH --> 	/me/avatar		-->	{avatar} 		-->	обновление в профиле пользователя ссылки на аватар пользователя
 ## PUT 	 --> 	/signin			-->	{email, password} 	-->	авторизация
-## PUT 	 --> 	/signup			-->	{name, about, avatar, 
-						email, password} 	-->	создание нового пользователя
+## PUT 	 --> 	/signup			-->	{name, about, avatar,email, password} 	-->	создание нового пользователя
 ## GET 	 --> 	/cards			-->	{} 			-->	список карточек с полными данными
 ## POST	 --> 	/cards			-->	{name, link}		-->	создание карточки
 ## DEL	 --> 	/cards/{cardID}		-->	{}			-->	удаление карточки
