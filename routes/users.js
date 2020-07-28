@@ -31,6 +31,7 @@ router.patch('/me/avatar', celebrate({
 
 module.exports = router;
 
+
 //    avatar: Joi.string().required().custom(validator.isURL(.....)),
 
 // Joi.object({

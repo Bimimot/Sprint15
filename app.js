@@ -14,7 +14,7 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
 });
 
 const { celebrate, Joi, errors } = require('celebrate'); // импорт обработки ошибок при валидации запросов
-const { NotFoundError, ServerError } = require('./middlewares/errors'); // импорт конструкторов типовых ошибок
+const { NotFoundError, ServerError, BadFormatError } = require('./middlewares/errors'); // импорт конструкторов типовых ошибок
 const cardsRouter = require('./routes/cards.js'); // импортируем роутер для карточек
 const usersRouter = require('./routes/users.js'); // импортируем роутер для данных о пользователях
 const { createUser, login } = require('./controllers/users'); // импорт методов авторизации из контроллера
@@ -51,17 +51,20 @@ app.post('/signup', celebrate({ // подключаем контроллер р�
   }),
 }), createUser);
 
-app.use(errorLogger); // подключаем логирование ошибок
-app.use(errors()); // обработка ошибок celebrate при помощи мидлвэры celebrate
 app.use((req, res, next) => { // если запрос на несуществующую страницу
   next(new NotFoundError('Такой ресурс не найден'));
 });
 
-app.use((err, req, res, next) => { // обработка ошибок, сюда переходим из блока catch
-  if (!err.statusCode) { // если ошибка пришла без кода - ставим ошибку сервера
-    err = new ServerError('На сервере произошла ошибка');
+app.use(errorLogger); // подключаем логирование ошибок
+
+app.use((err, req, res, next) => { // обработка ошибок, сюда переходим из блоков catch
+  if (err) {
+    if (err.joi || (err.name === 'CastError') || (err.name === 'ValidationError')) { err = new BadFormatError('Указаны неправильные данные'); } // eslint-disable-line no-param-reassign
+    if (!err.statusCode) { // если ошибка пришла без кода - ставим ошибку сервера
+      err = new ServerError('На сервере произошла ошибка'); // eslint-disable-line no-param-reassign
+      return res.status(err.statusCode).send({ message: err.message, status: err.statusCode }) }
   }
-  return res.status(err.statusCode).send({ message: err.message, status: err.statusCode });
+  next();
 });
 
 app.listen(PORT, () => {
