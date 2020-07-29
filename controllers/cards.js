@@ -4,7 +4,7 @@ const { AccessDeniedError, NotFoundError } = require('../middlewares/errors');
 // поиск всех карточек
 module.exports.getCards = (req, res, next) => {
   Card.find({})
-    .then((cards) => res.send({ data: cards }))
+    .then((cards) => res.send({ message: 'Созданные карточки', data: cards }))
     .catch(next);
 };
 
@@ -13,7 +13,7 @@ module.exports.postCard = (req, res, next) => {
   const { name, link } = req.body;
   const owner = req.user; // берем id, полученный из милдверы авторизации
   Card.create({ name, link, owner })
-    .then((card) => res.send({ data: card }))
+    .then((card) => res.send({ message: 'Карточка создана', data: card }))
     .catch(next);
 };
 
@@ -50,7 +50,7 @@ module.exports.likeCard = (req, res, next) => {
       if (card == null) {
         throw new NotFoundError('Карточка с таким id не найдена');
       } else {
-        res.send({ data: card });
+        res.send({ message: 'Лайк карточке поставлен', data: card });
       }
     })
     .catch(next);
@@ -67,7 +67,7 @@ module.exports.dislikeCard = (req, res, next) => {
       if (card == null) {
         throw new NotFoundError('Карточка с таким id не найдена');
       } else {
-        res.send({ data: card });
+        res.send({ message: 'Лайк у карточки убран', data: card });
       }
     })
     .catch(next);

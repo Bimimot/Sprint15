@@ -7,7 +7,7 @@ const { NotFoundError, DoubleDataError } = require('../middlewares/errors');
 // поиск всех пользователей
 module.exports.getUsers = (req, res, next) => {
   User.find({})
-    .then((users) => res.send({ data: users }))
+    .then((users) => res.send({ message: 'Зарегистрированные пользователи', data: users }))
     .catch(next);
 };
 
@@ -18,7 +18,7 @@ module.exports.getUserById = (req, res, next) => {
       if (user == null) {
         throw new NotFoundError('Такой пользователь не найден'); // создаем ошибку и переходим в обработчик ошибок
       } else {
-        res.send({ data: user });
+        res.send({ message: 'Пользователь найден', data: user });
       }
     })
     .catch(next);
@@ -33,9 +33,18 @@ module.exports.createUser = (req, res, next) => {
     .then((hash) => User.create({
       name, about, avatar, email, password: hash,
     }))
-    .then((user) => res.send({
-      _id: user._id, name: user.name, about: user.about, avatar: user.avatar, email: user.email,
-    }))
+    .then((user) => res.send(
+      {
+        message: 'Пользователь зарегистрирован',
+        data: {
+          _id: user._id,
+          name: user.name,
+          about: user.about,
+          avatar: user.avatar,
+          email: user.email,
+        },
+      },
+    ))
     .catch((err) => {
       // eslint-disable-next-line no-param-reassign
       if (err.code === 11000) { err = new DoubleDataError('Пользователь с таким email уже существует'); }
@@ -56,7 +65,7 @@ module.exports.patchUser = (req, res, next) => {
       if (user == null) {
         throw new NotFoundError('Такой пользователь не найден'); // создаем ошибку и переходим в обработчик ошибок
       } else {
-        res.send({ data: user });
+        res.send({ message: 'Профиль пользователя обновлен', data: user });
       }
     })
     .catch(next);
@@ -74,7 +83,7 @@ module.exports.patchUserAvatar = (req, res, next) => {
       if (user == null) {
         throw new NotFoundError('Такой пользователь не найден'); // создаем ошибку и переходим в обработчик ошибок
       } else {
-        res.send({ data: user });
+        res.send({ message: 'Аватар пользователя обновлен', data: user });
       }
     })
     .catch(next);
@@ -86,8 +95,8 @@ module.exports.login = (req, res, next) => {
 
   return User.findUserByCredentials(email, password)
     .then((user) => {
-      const token = jwt.sign({ _id: user._id }, cryptoKey, { expiresIn: '7d' }); // создали токен
-      res.cookie(token);
+      const token = jwt.sign({ _id: user._id }, cryptoKey, { expiresIn: '7d' }); // создали токен со сроком действия 7 дней
+      res.cookie('JWT', token);
       res.send({ message: 'Пользователь авторизован' });
     })
     .catch(next);
