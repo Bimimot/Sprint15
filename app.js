@@ -2,7 +2,6 @@ require('dotenv').config();
 const express = require('express'); // модуль ноды для http сервера
 const mongoose = require('mongoose'); // модуль ноды для подключения сервера с базой данных
 const bodyParser = require('body-parser'); // модуль ноды для парсинга пост-запросов в нужный (json) формат
-const validatorNpm = require('validator'); // валидатор для проверки URL в передаваемых запросах
 
 const { NODE_ENV } = process.env;
 const app = express();
@@ -21,7 +20,8 @@ const { NotFoundError, ServerError, BadFormatError } = require('./middlewares/er
 const cardsRouter = require('./routes/cards.js'); // импортируем роутер для карточек
 const usersRouter = require('./routes/users.js'); // импортируем роутер для данных о пользователях
 const { createUser, login } = require('./controllers/users'); // импорт методов авторизации из контроллера
-const { requestLogger, errorLogger } = require('./middlewares/logger');
+const { requestLogger, errorLogger } = require('./middlewares/logger'); // подключаем мидлваоу логгирования
+const validUrl = require('./routes/valid'); // подключаем функцию проверки url
 
 app.use(bodyParser.json()); // подключаем сборку JSON-формата
 app.use(requestLogger); // подключаем логирование запросов
@@ -48,12 +48,7 @@ app.post('/signup', celebrate({ // подключаем контроллер р�
   body: Joi.object().keys({
     name: Joi.string().required().min(2).max(30),
     about: Joi.string().required().min(2).max(30),
-    avatar: Joi.string().required()
-      .custom((value) => {
-        if (!validatorNpm.isURL(value)) {
-          throw new BadFormatError('Это неправильная ссылка');
-        } else { return value; }
-      }),
+    avatar: Joi.string().required().custom((value) => validUrl(value)),
     email: Joi.string().required().email(),
     password: Joi.string().required().min(6),
   }),

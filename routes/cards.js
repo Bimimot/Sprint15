@@ -1,8 +1,7 @@
 const router = require('express').Router();
 const { celebrate, Joi } = require('celebrate'); // подключаем библиотеку для валидации запросов
-const validatorNpm = require('validator');
 
-const { BadFormatError } = require('../middlewares/errors');
+const validUrl = require('./valid'); // подключаем функцию проверки url
 const auth = require('../middlewares/auth'); // подключаем мидлвэру авторизации
 
 const {
@@ -16,12 +15,7 @@ router.get('/', getCards); // вызываем метод получения в�
 router.post('/', celebrate({
   body: Joi.object().keys({
     name: Joi.string().required().min(2).max(30),
-    link: Joi.string().required()
-      .custom((value) => {
-        if (!validatorNpm.isURL(value)) {
-          throw new BadFormatError('Это неправильная ссылка');
-        } else { return value; }
-      }),
+    link: Joi.string().required().custom((value) => validUrl(value)),
   }),
 }), postCard); // вызываем метод добавлени карточки
 

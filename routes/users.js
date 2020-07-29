@@ -1,9 +1,8 @@
 const router = require('express').Router();
 const { celebrate, Joi } = require('celebrate'); // подключаем библиотеку для валидации запросов
-const validatorNpm = require('validator');
 
 const auth = require('../middlewares/auth'); // подключаем мидлвэру авторизации
-const { BadFormatError } = require('../middlewares/errors');
+const validUrl = require('./valid'); // подключаем функцию проверки url
 
 const {
   getUsers, getUserById, patchUser, patchUserAvatar,
@@ -26,12 +25,7 @@ router.patch('/me', celebrate({
 
 router.patch('/me/avatar', celebrate({
   body: Joi.object().keys({
-    avatar: Joi.string().required()
-      .custom((value) => {
-        if (!validatorNpm.isURL(value)) {
-          throw new BadFormatError('Это неправильная ссылка');
-        } else { return value; }
-      }),
+    avatar: Joi.string().required().custom((value) => validUrl(value)),
   }),
 }), patchUserAvatar); // вызываем метод обновления ссылки на аватар пользователя
 
