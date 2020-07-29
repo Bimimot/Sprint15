@@ -96,7 +96,7 @@ module.exports.login = (req, res, next) => {
   return User.findUserByCredentials(email, password)
     .then((user) => {
       const token = jwt.sign({ _id: user._id }, cryptoKey, { expiresIn: '7d' }); // создали токен со сроком действия 7 дней
-      res.cookie('JWT', token);
+      res.cookie('JWT', token, { maxAge: 604800000, httpOnly: true, SameSite: 'Lax' });
       res.send({ message: 'Пользователь авторизован' });
     })
     .catch(next);
