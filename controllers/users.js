@@ -37,7 +37,8 @@ module.exports.createUser = (req, res, next) => {
       _id: user._id, name: user.name, about: user.about, avatar: user.avatar, email: user.email,
     }))
     .catch((err) => {
-      if (err.code === 11000) { next(new DoubleDataError('Пользователь с таким email уже существует')); }
+      // eslint-disable-next-line no-param-reassign
+      if (err.code === 11000) { err = new DoubleDataError('Пользователь с таким email уже существует'); }
       next(err);
     });
 };
@@ -86,8 +87,8 @@ module.exports.login = (req, res, next) => {
   return User.findUserByCredentials(email, password)
     .then((user) => {
       const token = jwt.sign({ _id: user._id }, cryptoKey, { expiresIn: '7d' }); // создали токен
-      res.cookie({ token });
-      res.send({ message: 'Пользовательь авторизован' });
+      res.cookie(token);
+      res.send({ message: 'Пользователь авторизован' });
     })
     .catch(next);
 };
