@@ -65,15 +65,20 @@ app.use((req, res, next) => { // генерируем ошибку если за
 
 app.use(errorLogger); // подключаем логирование ошибок
 
-// eslint-disable-next-line no-unused-vars
-app.use((err, req, res, next) => { // обработка ошибок, сюда переходим из блоков catch
-  // обработка ошибок валидации, для режима разработки возвращаем полный текст ошибки
-  if (err.joi || (err.name === 'CastError') || (err.name === 'ValidationError') || (err.name === 'MongoError')) {
-    err = new BadFormatError((NODE_ENV !== 'production') ? err : 'В запросе указаны неправильные данные'); // eslint-disable-line no-param-reassign
+// обработка ошибок, сюда переходим из блоков catch
+app.use((err, req, res, next) => { // eslint-disable-line no-unused-vars
+  if (err.joi || (err.name === 'CastError')
+  || (err.name === 'ValidationError')
+  || (err.name === 'MongoError')) {
+    err = new BadFormatError( // eslint-disable-line no-param-reassign
+      (NODE_ENV !== 'production') ? err : 'В запросе указаны неправильные данные', // для режима разработки возвращаем полный текст ошибки
+    );
   }
-  // обработка ошибок без кода, для режима разработки возвращаем полный текст ошибки
+
   if (!err.statusCode) {
-    err = new ServerError((NODE_ENV !== 'production') ? err : 'На сервере произошла ошибка'); // eslint-disable-line no-param-reassign
+    err = new ServerError( // eslint-disable-line no-param-reassign
+      (NODE_ENV !== 'production') ? err : 'На сервере произошла ошибка', // для режима разработки возвращаем полный текст ошибки
+    );
   }
   return res.status(err.statusCode).send({ message: err.message, status: err.statusCode });
 });
