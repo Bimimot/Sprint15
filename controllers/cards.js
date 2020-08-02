@@ -1,59 +1,46 @@
 const Card = require('../models/card');
+const { AccessDeniedError, NotFoundError } = require('../middlewares/errors');
 
 // поиск всех карточек
-module.exports.getCards = (req, res) => {
+module.exports.getCards = (req, res, next) => {
   Card.find({})
-    .then((cards) => res.send({ data: cards }))
-    .catch((err) => res.status(500).send({ message: err.message }));
+    .then((cards) => res.send({ message: 'Созданные карточки', data: cards }))
+    .catch(next);
 };
 
 // создание карточки
-module.exports.postCard = (req, res) => {
+module.exports.postCard = (req, res, next) => {
   const { name, link } = req.body;
   const owner = req.user; // берем id, полученный из милдверы авторизации
   Card.create({ name, link, owner })
-    .then((card) => res.send({ data: card }))
-    .catch((err) => {
-      if (err.name === 'CastError' || err.name === 'ValidationError') {
-        res.status(400).send({ message: 'Данные карточки переданы в неверном формате' });
-      } else {
-        res.status(500).send({ message: err.name });
-      }
-    });
+    .then((card) => res.send({ message: 'Карточка создана', data: card }))
+    .catch(next);
 };
+
 // удаление карточки по id
-module.exports.delCard = (req, res) => {
+module.exports.delCard = (req, res, next) => {
   const { cardId } = req.params;
   const userId = `${req.user._id}`;
   Card.findById(cardId)
     .then((card) => {
       if (card == null) {
-        res.status(404).send({ message: 'Карточка с таким id не найдена' });
+        throw new NotFoundError('Карточка с таким id не найдена'); // создаем ошибку и переходим в обработчик ошибок
       } else {
         const cardOwner = `${card.owner}`; // приводим к одному типу для соблюдения стандарта линтера при использовании оператров сравнения
         if (userId === cardOwner) {
           Card.findByIdAndRemove(cardId)
             .then((mycard) => res.send({ message: 'Карточка удалена', data: mycard }))
-            .catch((err) => res.status(500).send({ message: err.message }));
+            .catch(next);
         } else {
-          res.status(403).send({ message: 'Нет прав на удаление этой карточки' });
+          throw new AccessDeniedError('Нет прав на удаление этой карточки');
         }
       }
     })
-    .catch((err) => {
-      if (err.name === 'CastError' || err.name === 'ValidationError') {
-        res.status(400).send({ message: 'id карточки передан в неверном формате' });
-      } else {
-        res.status(500).send({ message: err.name });
-      }
-    });
+    .catch(next);
 };
 
 // поставить лайк карточки, сохранить id пользователя в массив лайков
-module.exports.likeCard = (req, res) => {
-  // const { cardId } = req.params.cardId;
-  // const { userId } = req.user;
-//  res.send({ method: 'method likeCard', card: req.params.cardId, user: req.user._id });
+module.exports.likeCard = (req, res, next) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $addToSet: { likes: req.user._id } }, // добавить _id в массив, если его там нет
@@ -61,39 +48,27 @@ module.exports.likeCard = (req, res) => {
   )
     .then((card) => {
       if (card == null) {
-        res.status(404).send({ message: 'Карточка с таким id не найдена' });
+        throw new NotFoundError('Карточка с таким id не найдена');
       } else {
-        res.send({ data: card });
+        res.send({ message: 'Лайк карточке поставлен', data: card });
       }
     })
-    .catch((err) => {
-      if (err.name === 'CastError' || err.name === 'ValidationError') {
-        res.status(400).send({ message: 'id карточки передан в неверном формате' });
-      } else {
-        res.status(500).send({ message: err.name });
-      }
-    });
+    .catch(next);
 };
 
 // убрать лайк с карточки, убрать id пользователя из массива лайков
-module.exports.dislikeCard = (req, res) => {
+module.exports.dislikeCard = (req, res, next) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $pull: { likes: req.user._id } }, // убрать _id из массива
-    { new: true },
+    { new: true }, // в ответе вернем новые данные
   )
     .then((card) => {
       if (card == null) {
-        res.status(404).send({ message: 'Карточка с таким id не найдена' });
+        throw new NotFoundError('Карточка с таким id не найдена');
       } else {
-        res.send({ data: card });
+        res.send({ message: 'Лайк у карточки убран', data: card });
       }
     })
-    .catch((err) => {
-      if (err.name === 'CastError' || err.name === 'ValidationError') {
-        res.status(400).send({ message: 'id карточки передан в неверном формате' });
-      } else {
-        res.status(500).send({ message: err.name });
-      }
-    });
+    .catch(next);
 };
